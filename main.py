@@ -16,6 +16,7 @@ def get_reference( article_url ):
         try:
             refer_page = 1
             refer_html = connectToReferencePage.connect_to_reference(ref_type=ref_type,page=refer_page)
+            print(refer_page)
             if not refer_html:
                 continue
             while True:
@@ -27,6 +28,7 @@ def get_reference( article_url ):
                     break
                 else:
                     refer_page = referencePageParser.next_page
+                    #print(refer_page)
                     refer_html = connectToReferencePage.connect_to_reference(ref_type=ref_type,page=refer_page)
         except:
             print("Faile to connect to refer:%s"%(ref_type))
@@ -96,10 +98,16 @@ if __name__=="__main__":
                     author = "none"
                 if len(organization) == 0:
                     organization = "none"
+                if not type(keywords)==list:
+                    keywords = [keywords]
+                if not type(author)==list:
+                    author = [author]
+                if not type(organization) == list:
+                    organization = [organization]
+
+
                 main_result.write(title + "\t")
                 if keywords!="none":
-                    if not type(keywords)==list:
-                        keywords = [keywords]
                     for keyword_index in range(0, len(keywords)):
                         current_keyword = keywords[keyword_index].replace(";", "")
                         if keyword_index < len(keywords) - 1:
@@ -109,16 +117,12 @@ if __name__=="__main__":
                 else:
                     main_result.write(keywords + "\t")
                 main_result.write(abstract + "\t")
-                if not type(author)==list:
-                    author = [author]
                 for author_index in range(0, len(author)):
                     current_author = author[author_index].replace(";", "")
                     if author_index < len(author) - 1:
                         main_result.write(current_author + "&")
                     else:
                         main_result.write(current_author + "\t")
-                if not type(organization) == list:
-                    organization = [organization]
                 for organization_index in range(0, len(organization)):
                     current_organization = organization[organization_index].replace(";", "")
                     if organization_index < len(organization) - 1:
@@ -127,6 +131,8 @@ if __name__=="__main__":
                         main_result.write(current_organization + "\t")
                 main_result.write(doi + "\t")
                 main_result.write(classification + "\n")
+
+
                 reference = get_reference(article_url)
                 print(reference)
                 if len( reference["cankao"] )>0:#有参考文献

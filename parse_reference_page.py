@@ -34,8 +34,11 @@ class ReferencePageParser( HTMLParser ):
         if self.has_many_pages and tag=="a":
             try:
                 if attrs[1][0] == "href":
-                    self.cur_href_page = int(attrs[1][1].split("page=")[1][0])
-                    #<a class="page" href="/CiteRelation/Ref?page=2&amp;id=abjbtb201703003">下一页>></a>
+                    try:
+                        self.cur_href_page = int(attrs[1][1].split("page=")[1][0:2])
+                    except:
+                        self.cur_href_page = int(attrs[1][1].split("page=")[1][0])
+                    #<a class="page" href="/CiteRelation/Ref?page=22&amp;id=abjbtb201703003">下一页>></a>
                 else:
                     pass
             except:
