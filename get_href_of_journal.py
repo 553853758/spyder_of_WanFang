@@ -100,8 +100,8 @@ if __name__ == "__main__":
         parser.feed( page )
         page_number = parser.get_page_num()
         journal_href = {}
-        for i in range(1,int(page_number)):
-            page = c.specific_page_connect(NodeId=node_id,PageNo=str(page_number))
+        for i in range(1,int(page_number)+1):
+            page = c.specific_page_connect(NodeId=node_id,PageNo=str(i))
             parser = ClassPageParser()
             parser.feed( page )
             journal_href.update(parser.get_journal_href())

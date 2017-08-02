@@ -42,7 +42,7 @@ class ArticlePageParser( HTMLParser ):
         if tag == "meta":
             try:
                 if attrs[1][1] == "description":
-                    self.data_list["摘要"]=attrs[0][1].replace("\n","。").replace("\r","")
+                    self.data_list["摘要"]=attrs[0][1].replace("\n","").replace("\r","")
                 else:
                     pass
             except:
@@ -71,7 +71,7 @@ class ArticlePageParser( HTMLParser ):
         if len(data) == 0:
             return False
         if self.is_title:
-            self.data_list["标题"] = data
+            self.data_list["标题"] = data.replace("\n","").replace("\r","").replace("：","-").replace(":","-")
             self.is_title = False
         if self.is_pre:
             self.label = data.replace("：","").replace(":","")
