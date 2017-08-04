@@ -3,6 +3,8 @@ import os
 import time
 import random
 import gc
+import socket
+socket.setdefaulttimeout(10) 
 #import gevent
 #from gevent import monkey; monkey.patch_all()
 import get_version_of_journal
@@ -157,16 +159,28 @@ if __name__=="__main__":
     if not os.path.isdir(journal_type_path):
         os.mkdir( journal_type_path )
 
-    for journal_name in list(all_journal_name.keys())[0:10]:
+    for journal_name in list(all_journal_name.keys())[0:1]:
+            
         #journal_name = "电工材料"
         journal_path = (journal_type_path+"/%s") % (journal_name)
-        version_of_journal = get_version_of_journal.get_version_of_journal(all_journal_name[journal_name])
+        try:
+            version_of_journal = get_version_of_journal.get_version_of_journal(all_journal_name[journal_name])
+        except:
+            print("Cannot get version of %s"%(journal_name))
         if not os.path.isdir( journal_path ):
             os.mkdir( journal_path )
         log_result = open(journal_path+"/log.txt","a+")
         log_result.write(time.asctime( time.localtime(time.time()) )+"\n")
         log_result.close()
         for year in list(version_of_journal.keys()):#[0:1]:
+            need_ignoe = False
+            if journal_name == "北京警察学院学报":
+                for ignore_year in range(2008,2018):
+                    if str(ignore_year) in year:
+                        need_ignoe = True
+                        break
+            if need_ignoe:
+                continue
             log_result = open(journal_path+"/log.txt","a+")
             journal_year_path = (journal_path+"/%s") % (year)
             if not os.path.isdir(journal_year_path):

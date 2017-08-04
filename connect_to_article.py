@@ -15,10 +15,14 @@ class ConnectToAriclePage():
 
     def article_page_connect( self,url ):
         if 'http' in url:
-            req=urllib.request.Request(url,headers=self.headers)
-            result = self.opener.open(req)
-            html=result.read().decode("utf-8")
-            self.cur_page = html
+            try:
+                req=urllib.request.Request(url,headers=self.headers)
+                result = self.opener.open(req)
+                html=result.read().decode("utf-8")
+                self.cur_page = html
+            except:
+                print("Cannot connect to article:%s"%(url))
+                return False
         return html
 
     def save_cur_page(self,file_name="./doc/article_page.txt"):
