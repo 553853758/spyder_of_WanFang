@@ -5,7 +5,9 @@
 import urllib
 import http.cookiejar as cookielib
 from html.parser import HTMLParser
+import time
 import json
+import random
 
 class ConnectToJournalPage():
     def __init__(self):
@@ -27,10 +29,24 @@ class ConnectToJournalPage():
             journal_suffix = journal_suffix[1:len(journal_suffix)]
         postdata = journal_suffix
         req=urllib.request.Request(self.hosturl+postdata,headers=self.headers)
-        result = self.opener.open(req)
-        html=result.read().decode("utf-8")
-        self.cur_page = html
-        return html
+        try:
+            result = self.opener.open(req)
+            html=result.read().decode("utf-8")
+            self.cur_page = html
+            return html
+        except:
+            print("Time out ot connect to journal. Try again")
+            time.sleep(random.uniform(10,21))
+            try:
+                result = self.opener.open(req)
+                html=result.read().decode("utf-8")
+                self.cur_page = html
+                return html
+            except:
+                print("Time out ot connect to journal. Give up")
+                return "None"
+                
+            
 
     def save_cur_page(self,file_name="./doc/journal_page.txt"):
         f = open(file_name, "w")

@@ -71,7 +71,20 @@ def download_article(article_url,main_result,journal_type,journal_name,year,mont
                         return False
                         #continue
                     articlePageParser = parse_article_page.ArticlePageParser()
-                    articlePageParser.feed(article_html)
+                    try:
+                        articlePageParser.feed(article_html)
+                    except:
+                        print("The html is false. Try again\n")
+                        time.sleep(random.uniform(4,6))
+                        try:
+                            connectToArticlePage = connect_to_article.ConnectToAriclePage()
+                            article_html = connectToArticlePage.article_page_connect(article_url)
+                            connectToArticlePage.close()
+                            articlePageParser.feed(article_html)
+                        except:
+                            print("The html is false. Give up.\n")
+                            
+                        return False
                     #print(data_list)
                     abstract = articlePageParser.get_abstract()
                     keywords = articlePageParser.get_keywords()
@@ -159,7 +172,7 @@ if __name__=="__main__":
     if not os.path.isdir(journal_type_path):
         os.mkdir( journal_type_path )
 
-    for journal_name in list(all_journal_name.keys())[0:1]:
+    for journal_name in list(all_journal_name.keys())[0:10]:
             
         #journal_name = "电工材料"
         journal_path = (journal_type_path+"/%s") % (journal_name)
@@ -174,8 +187,8 @@ if __name__=="__main__":
         log_result.close()
         for year in list(version_of_journal.keys()):#[0:1]:
             need_ignoe = False
-            if journal_name == "北京警察学院学报":
-                for ignore_year in range(2008,2018):
+            if journal_name == "当代世界":
+                for ignore_year in range(2014,2018):
                     if str(ignore_year) in year:
                         need_ignoe = True
                         break
