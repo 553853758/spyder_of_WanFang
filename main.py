@@ -51,40 +51,25 @@ def get_json_without_download( journal_type ):
     journal_json = json.load(open("./doc/%s.json"%(journal_type), "r",encoding="utf-8"))
     try:
         download_file = open( "./doc/%s_download.txt"%(journal_type), "r",encoding="utf-8" )
-        for l in download_file.readlines():
-            if l.replace("\n","").replace("\ufeff","") in journal_json:
-                journal_json.pop( l.replace("\n","").replace("\ufeff","") )
-            else:
-                print("%s is not in j%"%(l,journal_type))
     except:
         print("There is no journal has been downloaded")
         pass
+    for l in download_file.readlines():
+        if l.replace("\n","").replace("\ufeff","") in journal_json:
+            journal_json.pop( l.replace("\n","").replace("\ufeff","") )
+        else:
+            print("%s is not in %s"%(l,journal_type))
     return journal_json
 
 def download_article(article_url,main_result,journal_type,journal_name,year,month,journal_year_path):
-                    try:
-                        connectToArticlePage = connect_to_article.ConnectToAriclePage()
-                        article_html = connectToArticlePage.article_page_connect(article_url)
-                        connectToArticlePage.close()
-                    except:
-                        time.sleep(random.uniform(4,6))
-                        return False
+                    connectToArticlePage = connect_to_article.ConnectToAriclePage()
+                    article_html = connectToArticlePage.article_page_connect(article_url)
+                    connectToArticlePage.close()
                         #continue
                     articlePageParser = parse_article_page.ArticlePageParser()
-                    try:
-                        articlePageParser.feed(article_html)
-                    except:
-                        print("The html is false. Try again\n")
-                        time.sleep(random.uniform(4,6))
-                        try:
-                            connectToArticlePage = connect_to_article.ConnectToAriclePage()
-                            article_html = connectToArticlePage.article_page_connect(article_url)
-                            connectToArticlePage.close()
-                            articlePageParser.feed(article_html)
-                        except:
-                            print("The html is false. Give up.\n")
-                            
+                    if article_html == "None":
                         return False
+                    articlePageParser.feed(article_html)
                     #print(data_list)
                     abstract = articlePageParser.get_abstract()
                     keywords = articlePageParser.get_keywords()
@@ -168,11 +153,11 @@ if __name__=="__main__":
     journal_type = "哲学政法"
     #journal_type = "工业技术"
     all_journal_name = get_json_without_download( journal_type )
-    journal_type_path = "./doc/spyder_result/%s" % (journal_type)
+    journal_type_path = "../spyder_result/%s" % (journal_type)
     if not os.path.isdir(journal_type_path):
         os.mkdir( journal_type_path )
-
-    for journal_name in list(all_journal_name.keys())[0:10]:
+    
+    for journal_name in list(all_journal_name.keys())[0: min( len(list(all_journal_name.keys())),1 )]:
             
         #journal_name = "电工材料"
         journal_path = (journal_type_path+"/%s") % (journal_name)
@@ -187,8 +172,8 @@ if __name__=="__main__":
         log_result.close()
         for year in list(version_of_journal.keys()):#[0:1]:
             need_ignoe = False
-            if journal_name == "当代世界":
-                for ignore_year in range(2014,2018):
+            if journal_name == "军队政工理论研究":
+                for ignore_year in range(2011,2018):
                     if str(ignore_year) in year:
                         need_ignoe = True
                         break
@@ -220,7 +205,7 @@ if __name__=="__main__":
                 main_result.write("DOI\t")
                 main_result.write("分类号\n")
                 
-                url_thread = []
+                url_thread = [] 
                 for article_url in article_url_list:#[0:1]:
                 #for article_url in ["http://d.wanfangdata.com.cn/Periodical/abjbtb201703003"]:
                     #print(article_url)
